@@ -97,7 +97,7 @@ func makeUppercaseEndpoint(svc StringService) endpoint.Endpoint{
 //Entry Point
 
 func main(){
-	svc:= stringService()
+	svc:= stringService{}
 
 	uppercaseHandler:=httptransport.NewServer{
 		makeUppercaseEndpoint(svc),
