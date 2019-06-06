@@ -52,7 +52,7 @@ type countResponse struct {
 }
 
 // Endpoints are a primary abstraction in go-kit. An endpoint represents a single RPC (method in our service interface)
-func makeUppercaseResponse(svc StringService) endpoint.Endpoint{
+func makeUppercaseEndpoint(svc StringService) endpoint.Endpoint{
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 
 		req:= request.(uppercaseRequest)
@@ -64,7 +64,7 @@ func makeUppercaseResponse(svc StringService) endpoint.Endpoint{
 		}
 	}
 
-	func makeCountResponse(svc StringService) endpoint.Endpoint{
+	func makeCountEndpoint(svc StringService) endpoint.Endpoint{
 		return func(_ context.Context, request interface{}) (interface{},error){
 			req := request.(countRequest)
 		v := svc.Count(req.S)
@@ -94,7 +94,27 @@ func makeUppercaseResponse(svc StringService) endpoint.Endpoint{
 		return json.NewEncoder(w).Encode(response)
 	}
 
+//Entry Point
 
+func main(){
+	svc:= stringService()
+
+	uppercaseHandler:=httptransport.NewServer{
+		makeUppercaseEndpoint(svc),
+		decodeUppercaseRequest,
+		encodeResponse,
+	}
+
+	countHandler:=httptransport.NewServer{
+		makeCountEndpoint(svc),
+		decodeCounteRequest,
+		encodeResponse,
+	}
+
+	http.Handle("/uppercase", uppercaseHandler)
+	http.Handle("/count", countHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 
 
 
