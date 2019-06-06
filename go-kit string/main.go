@@ -16,6 +16,7 @@ type StringService interface{
 	Count(string)(int)
 }
 
+//busines layer
 // stringService is a concrete implementation of StringService
 type stringService struct{}
 
@@ -29,6 +30,8 @@ func(stringService)Uppercase(s string)(string,error){
 func(stringService)Count(s string)(int){
 	return len(s)
 }
+// endpoint layer
+
 
 // for each method, we define request and response structs
 type uppercaseRequest struct {
@@ -69,6 +72,32 @@ func makeUppercaseResponse(svc StringService) endpoint.Endpoint{
 		}
 	}
 
-	
+	//transport layer
+
+	func decodeUppercaseRequest(_ context.Context, req*http.Request) (interface{},error){
+		var request uppercaseRequest
+		if err:= json.NewDecoder(req.Body).Decode(&request); err!=nil{
+			return nil, err
+		}
+		return request,nil
+	}
+
+	func decodeCounteRequest(_ context.Context, req*http.Request) (interface{},error){
+		var request uppercaseRequest
+		if err:= json.NewDecoder(req.Body).Decode(&request); err!=nil{
+			return nil, err
+		}
+		return request,nil
+	}
+
+	func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+		return json.NewEncoder(w).Encode(response)
+	}
+
+
+
+
+
+
 
 
